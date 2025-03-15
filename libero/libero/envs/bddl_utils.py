@@ -1,6 +1,6 @@
 from bddl.parsing import *
+from bddl.parsing import scan_tokens, package_predicates
 
-import itertools
 import numpy as np
 
 pi = np.pi
@@ -119,7 +119,7 @@ def robosuite_parse_problem(problem_filename):
                     else:
                         object_list.append(group.pop(0))
                 if object_list:
-                    if not "object" in objects:
+                    if "object" not in objects:
                         objects["object"] = []
                     objects["object"] += object_list
             elif t == ":obj_of_interest":
@@ -137,7 +137,7 @@ def robosuite_parse_problem(problem_filename):
                     else:
                         fixture_list.append(group.pop(0))
                 if fixture_list:
-                    if not "fixture" in fixtures:
+                    if "fixture" not in fixtures:
                         fixtures["fixture"] = []
                     fixtures["fixture"] += fixture_list
             elif t == ":regions":

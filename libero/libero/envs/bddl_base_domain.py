@@ -2,13 +2,11 @@ import numpy as np
 import os
 import robosuite.utils.transform_utils as T
 
-from copy import deepcopy
+
 from robosuite.environments.manipulation.single_arm_env import SingleArmEnv
 from robosuite.models.tasks import ManipulationTask
 from robosuite.utils.placement_samplers import SequentialCompositeSampler
 from robosuite.utils.observables import Observable, sensor
-from robosuite.utils.mjcf_utils import CustomMaterial
-import robosuite.macros as macros
 
 import mujoco
 
@@ -162,7 +160,7 @@ class BDDLBaseDomain(SingleArmEnv):
     def seed(self, seed):
         np.random.seed(seed)
 
-    def reward(self, action=None):
+    def reward(self, action=None):  # TODO: add reward shaping here
         """
         Reward function for the task.
 
@@ -414,12 +412,12 @@ class BDDLBaseDomain(SingleArmEnv):
         # Additional object references from this env
         self.obj_body_id = dict()
 
-        for (object_name, object_body) in self.objects_dict.items():
+        for object_name, object_body in self.objects_dict.items():
             self.obj_body_id[object_name] = self.sim.model.body_name2id(
                 object_body.root_body
             )
 
-        for (fixture_name, fixture_body) in self.fixtures_dict.items():
+        for fixture_name, fixture_body in self.fixtures_dict.items():
             self.obj_body_id[fixture_name] = self.sim.model.body_name2id(
                 fixture_body.root_body
             )
@@ -467,7 +465,7 @@ class BDDLBaseDomain(SingleArmEnv):
         sensors.append(world_pose_in_gripper)
         names.append("world_pose_in_gripper")
 
-        for (i, obj) in enumerate(self.objects):
+        for i, obj in enumerate(self.objects):
             obj_sensors, obj_sensor_names = self._create_obj_sensors(
                 obj_name=obj.name, modality="object"
             )

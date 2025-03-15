@@ -4,7 +4,8 @@ from libero.libero.envs.robots import *
 from libero.libero.envs.objects import *
 from libero.libero.envs.predicates import *
 from libero.libero.envs.regions import *
-from libero.libero.envs.utils import rectangle2xyrange
+
+import numpy as np
 
 
 @register_problem
@@ -36,6 +37,10 @@ class Libero_Tabletop_Manipulation(BDDLBaseDomain):
                     }
                 }
             )
+        if "reward_shaping" not in kwargs or kwargs["reward_shaping"] is None:
+            kwargs.update({"reward_shaping": True})
+
+        self._reward_shaping = kwargs["reward_shaping"]
 
         super().__init__(bddl_file_name, *args, **kwargs)
 
@@ -94,7 +99,7 @@ class Libero_Tabletop_Manipulation(BDDLBaseDomain):
                 continue
             # Otherwise the processing is consistent
             for query_dict in [self.objects_dict, self.fixtures_dict]:
-                for (name, body) in query_dict.items():
+                for name, body in query_dict.items():
                     try:
                         if "worldbody" not in list(body.__dict__.keys()):
                             # This is a special case for CompositeObject, we skip this as this is very rare in our benchmark
@@ -141,6 +146,12 @@ class Libero_Tabletop_Manipulation(BDDLBaseDomain):
         for state in goal_state:
             result = self._eval_predicate(state) and result
         return result
+
+    def reward(self, action=None):
+        """
+        Reward function for the task.
+        """
+        return super().reward(action)
 
     def _eval_predicate(self, state):
         if len(state) == 3:
